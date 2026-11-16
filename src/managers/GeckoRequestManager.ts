@@ -1,6 +1,6 @@
+import fetch, { type RequestInfo, type RequestInit, type Response } from "node-fetch";
 import { HttpError } from "../errors/HttpError.js";
 import { sleep } from "../utils/sleep.js";
-import fetch, { RequestInfo, RequestInit, Response } from "node-fetch";
 
 type GeckoRequestManagerProps = {
   baseURL: string;

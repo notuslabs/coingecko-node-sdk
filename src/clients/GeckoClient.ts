@@ -1,7 +1,7 @@
-import { RequestInit } from "node-fetch";
+import type { RequestInit } from "node-fetch";
 import { CoinsManager } from "../managers/CoinsManager.js";
-import { GeckoRequestManager } from "../managers/GeckoRequestManager.js";
 import { ContractsManager } from "../managers/ContractsManager.js";
+import { GeckoRequestManager } from "../managers/GeckoRequestManager.js";
 
 type GeckoClientProps = {
   /* Maybe useful for Pro users*/

@@ -1,8 +1,8 @@
+import { Big } from "big.js";
 import { parse } from "lossless-json";
 import type { Response } from "node-fetch";
 import type { ZodType } from "zod";
 import { InvalidResponseFromCoingeckoError } from "../errors/InvalidResponseFromCoingeckoError.js";
-import { Big } from "big.js";
 
 export async function parseSchemaFromResponse<T>(
 	schema: ZodType<T>,

@@ -1,13 +1,13 @@
-import { z } from "zod";
+import type { z } from "zod";
 import { CoinNotFoundError } from "../errors/CoinNotFoundError.js";
 import { HttpError } from "../errors/HttpError.js";
-import { Coin } from "../structures/Coin.js";
-import { CoinMarket } from "../structures/CoinMarket.js";
-import { CoinPrice } from "../structures/CoinPrice.js";
-import { Ticker } from "../structures/Ticker.js";
-import { parseSchemaFromResponse } from "../utils/schemaparser.js";
 import { BaseCoin } from "./../structures/BaseCoin.js";
-import { GeckoRequestManager } from "./GeckoRequestManager.js";
+import type { Coin } from "../structures/Coin.js";
+import type { CoinMarket } from "../structures/CoinMarket.js";
+import type { CoinPrice } from "../structures/CoinPrice.js";
+import type { Ticker } from "../structures/Ticker.js";
+import { parseSchemaFromResponse } from "../utils/schemaparser.js";
+import type { GeckoRequestManager } from "./GeckoRequestManager.js";
 import { CoinMarketMapper } from "./mappers/CoinMarketMapper.js";
 import { MarketChartMapper } from "./mappers/MarketChartMapper.js";
 import {

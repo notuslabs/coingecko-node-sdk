@@ -1,6 +1,6 @@
-import { z } from "zod";
+import type { z } from "zod";
 import { CoinMarket } from "../../index.js";
-import { coinMarketSchema } from "../validators/CoinsManager.validator.js";
+import type { coinMarketSchema } from "../validators/CoinsManager.validator.js";
 
 export class CoinMarketMapper {
   static toCoinMarket(props: z.infer<typeof coinMarketSchema>): CoinMarket {

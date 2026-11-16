@@ -1,4 +1,5 @@
 import { GeckoClient } from "./../clients/GeckoClient.js";
+
 (async () => {
   const client = new GeckoClient();
 
