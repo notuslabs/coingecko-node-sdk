@@ -31,7 +31,7 @@ export class GeckoRequestManager {
 
     let maxAttempts = 3;
 
-    if (typeof this.props.autoRetry == "object") {
+    if (typeof this.props.autoRetry === "object") {
       maxAttempts = this.props.autoRetry.maxAttempts;
     }
 
