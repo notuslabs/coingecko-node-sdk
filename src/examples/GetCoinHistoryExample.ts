@@ -1,4 +1,9 @@
 import { GeckoClient } from "./../clients/GeckoClient.js";
+
+declare const process: {
+	env: Record<string, string | undefined>;
+};
+
 (async () => {
 	const client = new GeckoClient({
 		baseURL: "https://pro-api.coingecko.com/api/v3/",
@@ -11,7 +16,7 @@ import { GeckoClient } from "./../clients/GeckoClient.js";
 
 	const historicalData = await client.coins.history({
 		coin_id: "bitcoin",
-		date: "30-12-2017", // Format: dd-mm-yyyy
+		date: new Date("2017-12-30T00:00:00Z"),
 		localization: false, // Optional, defaults to true
 	});
 

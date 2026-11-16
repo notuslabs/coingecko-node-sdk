@@ -1,12 +1,13 @@
+import type { z } from "zod";
 import { CoinNotFoundError } from "../errors/CoinNotFoundError.js";
 import { HttpError } from "../errors/HttpError.js";
-import { Coin } from "../structures/Coin.js";
-import { CoinMarket } from "../structures/CoinMarket.js";
-import { CoinPrice } from "../structures/CoinPrice.js";
-import { Ticker } from "../structures/Ticker.js";
-import { parseSchemaFromResponse } from "../utils/schemaparser.js";
 import { BaseCoin } from "./../structures/BaseCoin.js";
-import { GeckoRequestManager } from "./GeckoRequestManager.js";
+import type { Coin } from "../structures/Coin.js";
+import type { CoinMarket } from "../structures/CoinMarket.js";
+import type { CoinPrice } from "../structures/CoinPrice.js";
+import type { Ticker } from "../structures/Ticker.js";
+import { parseSchemaFromResponse } from "../utils/schemaparser.js";
+import type { GeckoRequestManager } from "./GeckoRequestManager.js";
 import { CoinMarketMapper } from "./mappers/CoinMarketMapper.js";
 import { MarketChartMapper } from "./mappers/MarketChartMapper.js";
 import {
@@ -73,7 +74,7 @@ export type GetCoinMarketChartProps = {
 
 export type GetCoinHistoryProps = {
 	coin_id: string;
-	date: string; // Format: dd-mm-yyyy
+	date: Date;
 	localization?: boolean;
 };
 
@@ -100,16 +101,15 @@ export class CoinsManager {
 		params.append("precision", "full");
 
 		const response = await this.#request.get(
-			`/simple/token_price/${chain}?` + params,
+			`/simple/token_price/${chain}?${params}`,
 		);
 
 		if (!response.ok)
 			throw new HttpError(response.status, await response.text());
 
-		const data = await parseSchemaFromResponse<typeof tokenPriceSchema._type>(
-			tokenPriceSchema,
-			response,
-		);
+		const data = await parseSchemaFromResponse<
+			z.infer<typeof tokenPriceSchema>
+		>(tokenPriceSchema, response);
 
 		return Object.keys(data).map((key) => data[key] as CoinPrice);
 	}
@@ -137,7 +137,7 @@ export class CoinsManager {
 		}
 
 		const response = await this.#request.get(
-			`/coins/${props.coin_id}?` + params,
+			`/coins/${props.coin_id}?${params}`,
 		);
 
 		if (response.status === 404) return null;
@@ -150,19 +150,19 @@ export class CoinsManager {
 
 	async list(props?: ListCoinsProps): Promise<BaseCoin[]> {
 		const params = new URLSearchParams();
-		if (props && props.include) {
+		if (props?.include) {
 			const { platform } = props.include;
 
 			if (platform)
 				params.append("include_platform", String(props.include.platform));
 		}
 
-		const response = await this.#request.get("/coins/list?" + params);
+		const response = await this.#request.get(`/coins/list?${params}`);
 
 		if (!response.ok)
 			throw new HttpError(response.status, await response.text());
 
-		const data = await parseSchemaFromResponse<typeof coinsSchema._type>(
+		const data = await parseSchemaFromResponse<z.infer<typeof coinsSchema>>(
 			coinsSchema,
 			response,
 		);
@@ -194,17 +194,16 @@ export class CoinsManager {
 			params.append("page", String(page));
 		}
 
-		const response = await this.#request.get("/coins/markets?" + params);
+		const response = await this.#request.get(`/coins/markets?${params}`);
 
-		if (response.status == 404) throw new CoinNotFoundError(vs_currency);
+		if (response.status === 404) throw new CoinNotFoundError(vs_currency);
 
 		if (!response.ok)
 			throw new HttpError(response.status, await response.text());
 
-		const data = await parseSchemaFromResponse<typeof coinMarketsSchema._type>(
-			coinMarketsSchema,
-			response,
-		);
+		const data = await parseSchemaFromResponse<
+			z.infer<typeof coinMarketsSchema>
+		>(coinMarketsSchema, response);
 
 		return data.map(CoinMarketMapper.toCoinMarket);
 	}
@@ -224,7 +223,7 @@ export class CoinsManager {
 		}
 
 		const response = await this.#request.get(
-			`/coins/${coin_id}/tickers?` + params,
+			`/coins/${coin_id}/tickers?${params}`,
 		);
 
 		if (response.status === 404) return null;
@@ -232,7 +231,7 @@ export class CoinsManager {
 		if (!response.ok)
 			throw new HttpError(response.status, await response.text());
 
-		const data = await parseSchemaFromResponse<typeof tickersSchema._type>(
+		const data = await parseSchemaFromResponse<z.infer<typeof tickersSchema>>(
 			tickersSchema,
 			response,
 		);
@@ -254,7 +253,7 @@ export class CoinsManager {
 		if (interval) params.append("interval", interval);
 
 		const response = await this.#request.get(
-			`/coins/${coin_id}/market_chart?` + params,
+			`/coins/${coin_id}/market_chart?${params}`,
 		);
 
 		if (response.status === 404) throw new CoinNotFoundError(coin_id);
@@ -262,10 +261,9 @@ export class CoinsManager {
 		if (!response.ok)
 			throw new HttpError(response.status, await response.text());
 
-		const data = await parseSchemaFromResponse<typeof marketChartSchema._type>(
-			marketChartSchema,
-			response,
-		);
+		const data = await parseSchemaFromResponse<
+			z.infer<typeof marketChartSchema>
+		>(marketChartSchema, response);
 
 		return MarketChartMapper.toMarketChart(data);
 	}
@@ -273,15 +271,18 @@ export class CoinsManager {
 	async history({
 		coin_id,
 		date,
-		localization = true,
+		localization,
 	}: GetCoinHistoryProps): Promise<Coin | null> {
 		const params = new URLSearchParams();
 
-		params.append("date", date);
-		params.append("localization", String(localization));
+		params.append("date", String(Math.floor(date.getTime() / 1000)));
+
+		if (localization !== void 0) {
+			params.append("localization", String(localization));
+		}
 
 		const response = await this.#request.get(
-			`/coins/${coin_id}/history?` + params,
+			`/coins/${coin_id}/history?${params}`,
 		);
 
 		if (response.status === 404) return null;

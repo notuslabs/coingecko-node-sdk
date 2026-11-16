@@ -1,7 +1,7 @@
 import { HttpError } from "../errors/HttpError.js";
-import { Coin } from "../structures/Coin.js";
-import { CoinsManagerProps } from "./CoinsManager.js";
-import { GeckoRequestManager } from "./GeckoRequestManager.js";
+import type { Coin } from "../structures/Coin.js";
+import type { CoinsManagerProps } from "./CoinsManager.js";
+import type { GeckoRequestManager } from "./GeckoRequestManager.js";
 
 export class ContractsManager {
   #request: GeckoRequestManager;

@@ -1,6 +1,6 @@
+import fetch, { type RequestInfo, type RequestInit, type Response } from "node-fetch";
 import { HttpError } from "../errors/HttpError.js";
 import { sleep } from "../utils/sleep.js";
-import fetch, { RequestInfo, RequestInit, Response } from "node-fetch";
 
 type GeckoRequestManagerProps = {
   baseURL: string;
@@ -31,7 +31,7 @@ export class GeckoRequestManager {
 
     let maxAttempts = 3;
 
-    if (typeof this.props.autoRetry == "object") {
+    if (typeof this.props.autoRetry === "object") {
       maxAttempts = this.props.autoRetry.maxAttempts;
     }
 
